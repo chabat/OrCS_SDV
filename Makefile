@@ -22,7 +22,7 @@ FD_HIVE = hive
 FD_EMC = emc
 FD_CONFIG = config
 FD_DISAMBIGUATION = memory_disambiguation
-
+FD_SDV = SDV
 
 ###
 LIBRARY = -lz -lconfig++
@@ -77,6 +77,7 @@ SRC_CORE =  simulator.cpp orcs_engine.cpp\
 			$(SRC_MEMORY)\
 			$(SRC_EMC)
 
+SRC_SDV = $(FD_SDV)/TL.cpp\
 ########################################################
 OBJS_CORE = ${SRC_CORE:.cpp=.o}
 OBJS = $(OBJS_CORE)

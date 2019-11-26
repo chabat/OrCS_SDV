@@ -34,6 +34,9 @@ class orcs_engine_t {
         //Memory Controller
         memory_controller_t *memory_controller;
         hive_controller_t *hive_controller;
+		//SDV Structures
+		TL_t *table_of_loads;
+
 
         // ====================================================================
         /// Statistics related

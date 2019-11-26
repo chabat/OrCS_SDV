@@ -116,6 +116,11 @@ extern orcs_engine_t orcs_engine;
 
 // #define NUMBER_OF_PROCESSORS 1
 
+//  =========================================//
+// SDV Classes
+//  =========================================//
+class TL_t;
+
 #define SANITY_CHECK 0
 #define HEARTBEAT 1
 #define HEARTBEAT_CLOCKS 10000000
@@ -217,5 +222,10 @@ extern orcs_engine_t orcs_engine;
 // // HIVE INCLUDES
 #include "./hive/hive_controller.hpp"
 #include "./hive/hive_register.hpp"
+//  =========================================//
+// // SDV INCLUDES
+#include "./SDV/TL_line.hpp"
+#include "./SDV/TL_set.hpp"
+#include "./SDV/TL.hpp"
 //  =========================================//
 #endif  // _ORCS_ORCS_HPP_
