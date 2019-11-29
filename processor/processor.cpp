@@ -578,7 +578,7 @@ void processor_t::fetch(){
 			this->traceIsOver = true;
 			break;
 		}
-		if (FETCH_DEBUG){			
+		if (FETCH_DEBUG){
 			ORCS_PRINTF("Opcode Fetched %s\n", operation.content_to_string2().c_str())
 		}
 		//============================
@@ -619,7 +619,7 @@ void processor_t::fetch(){
 		if (!updated)
 		{
 			memory_package_t* mob_line = new memory_package_t;
-			
+
 			mob_line->clients.push_back (fetchBuffer.back());
 			mob_line->processor_id = this->processor_id;
 			mob_line->opcode_address = fetchBuffer.back()->opcode_address;
@@ -701,7 +701,7 @@ void processor_t::decode(){
 									0,
 									1,
 									*this->fetchBuffer.front());
-			
+
 			new_uop.is_hive = true;
 			new_uop.hive_read1 = this->fetchBuffer.front()->hive_read1;
 			new_uop.hive_read2 = this->fetchBuffer.front()->hive_read2;
@@ -722,7 +722,7 @@ void processor_t::decode(){
 									this->fetchBuffer.front()->read_address,
 									this->fetchBuffer.front()->read_size,
 									*this->fetchBuffer.front());
-			
+
 			new_uop.is_hive = true;
 			new_uop.hive_read1 = this->fetchBuffer.front()->hive_read1;
 			new_uop.read_address = this->fetchBuffer.front()->read_address;
@@ -746,7 +746,7 @@ void processor_t::decode(){
 									this->fetchBuffer.front()->write_address,
 									this->fetchBuffer.front()->write_size,
 									*this->fetchBuffer.front());
-			
+
 			new_uop.is_hive = true;
 			new_uop.hive_read1 = this->fetchBuffer.front()->hive_read1;
 			new_uop.read_address = this->fetchBuffer.front()->read_address;
@@ -765,6 +765,23 @@ void processor_t::decode(){
 			return;
 		}
 
+
+		//SPECULATIVE DYNAMIC VECTORIZATION
+		//Check if the instruction is a load
+		if(this->fetchBuffer.front()->opcode_operation == INSTRUCTION_OPERATION_MEM_LOAD){
+			//Check if the load already is on the table of loads
+			uint64_t this_pc = fetchBuffer.front()->opcode_address;
+			uint64_t this_address = fetchBuffer.front()->read_address;
+			int tl_line = orcs_engine.table_of_loads->tlFind(this_pc);
+			//if the load is not in the table of table_of_loads, insert it
+			if(tl_line == -1)
+				orcs_engine.table_of_loads->tlInsert(this_pc, this_address);
+			else{
+				//Otherwise, update last address, stride and confidence counter
+				orcs_engine.table_of_loads->tlUpdate(tl_line, this_pc, this_address);
+			}
+		}
+
 		// =====================
 		//Decode Read 1
 		// =====================
@@ -777,7 +794,7 @@ void processor_t::decode(){
 								  this->fetchBuffer.front()->read_address,
 								  this->fetchBuffer.front()->read_size,
 								  *this->fetchBuffer.front());
-			
+
 			//SE OP DIFERE DE LOAD, ZERA REGISTERS
 			if (this->fetchBuffer.front()->opcode_operation != INSTRUCTION_OPERATION_MEM_LOAD)
 			{
@@ -1028,7 +1045,7 @@ void processor_t::update_registers(reorder_buffer_line_t *new_rob_line){
 	}
 
 	/// Control the Register Dependency - Register WRITE
-	for (uint32_t k = 0; k < MAX_REGISTERS; k++)  
+	for (uint32_t k = 0; k < MAX_REGISTERS; k++)
 	{
 		this->add_registerWrite();
 		if (new_rob_line->uop.write_regs[k] < 0)
@@ -1121,7 +1138,7 @@ void processor_t::rename(){
 			mob_line = &this->memory_order_buffer_hive[pos_mob];
 			//ORCS_PRINTF ("reservando espaço no MOB para instrução %s %lu\n", get_enum_instruction_operation_char(this->decodeBuffer.front()->opcode_operation), this->decodeBuffer.front()->opcode_number)
 		}
-		
+
 		//=======================
 		// Verificando se tem espaco no ROB se sim bamos inserir
 		//=======================
@@ -1304,7 +1321,7 @@ void processor_t::dispatch(){
 					ORCS_PRINTF("=================\n")
 				}
 			}
-		
+
 			if (total_dispatched >= DISPATCH_WIDTH){
 				break;
 			}
@@ -1691,7 +1708,7 @@ void processor_t::execute()
 					/// Remove from the Functional Units
 					this->unified_functional_units.erase(this->unified_functional_units.begin() + i);
 					i--;
-					
+
 					if (DEBUG) ORCS_PRINTF ("Processor execute(): HIVE instruction %lu executed!\n", rob_line->uop.uop_number)
 				}
 				break;
@@ -1831,10 +1848,10 @@ uint32_t processor_t::mob_read(){
 				ORCS_PRINTF("=================================\n")
 			}
 		}
-		
+
 		if (!oldest_read_to_send->sent){
 			memory_package_t* mob_line = new memory_package_t;
-			
+
 			mob_line->clients.push_back (oldest_read_to_send);
 			mob_line->opcode_address = oldest_read_to_send->opcode_address;
 			mob_line->memory_address = oldest_read_to_send->memory_address;
@@ -1890,7 +1907,7 @@ memory_order_buffer_line_t* processor_t::get_next_op_hive(){
 					}
 				}
 				return &this->memory_order_buffer_hive[pos];
-		} 
+		}
 		pos++;
 		if( pos >= MOB_HIVE) pos=0;
 	}
@@ -1905,7 +1922,7 @@ uint32_t processor_t::mob_hive(){
 	if (this->oldest_hive_to_send != NULL){
 		if (!this->oldest_hive_to_send->sent){
 			memory_package_t* mob_line = new memory_package_t;
-			
+
 			mob_line->clients.push_back (oldest_hive_to_send);
 			mob_line->opcode_address = oldest_hive_to_send->opcode_address;
 			mob_line->memory_address = oldest_hive_to_send->memory_address;
@@ -1999,7 +2016,7 @@ uint32_t processor_t::mob_write(){
 		//sendind to write data
 		if (!this->oldest_write_to_send->sent){
 			memory_package_t* mob_line = new memory_package_t;
-			
+
 			mob_line->clients.push_back (oldest_write_to_send);
 			mob_line->opcode_address = oldest_write_to_send->opcode_address;
 			mob_line->memory_address = oldest_write_to_send->memory_address;

@@ -62,6 +62,8 @@ SRC_HIVE = $(FD_HIVE)/hive_controller.cpp\
 
 SRC_CONFIG = $(FD_CONFIG)/config.cpp
 
+SRC_SDV = $(FD_SDV)/TL.cpp\
+
 SRC_CORE =  simulator.cpp orcs_engine.cpp\
 			$(SRC_TRACE_READER)\
 			$(SRC_PACKAGE)\
@@ -75,9 +77,9 @@ SRC_CORE =  simulator.cpp orcs_engine.cpp\
 			$(SRC_PREFETCHER)\
 			$(SRC_CONFIG)\
 			$(SRC_MEMORY)\
-			$(SRC_EMC)
+			$(SRC_EMC)\
+			$(SRC_SDV)\
 
-SRC_SDV = $(FD_SDV)/TL.cpp\
 ########################################################
 OBJS_CORE = ${SRC_CORE:.cpp=.o}
 OBJS = $(OBJS_CORE)
