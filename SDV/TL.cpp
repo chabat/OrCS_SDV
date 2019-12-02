@@ -52,7 +52,7 @@ void TL_t::tlInsert(uint64_t pc, uint64_t last_address){
     this->sets[set].freeLines--;
 }
 
-void TL_t::tlUpdate(uint32_t line, uint32_t size, uint64_t pc, uint64_t address){
+void TL_t::tlUpdate(uint32_t line, uint32_t readSize, uint64_t pc, uint64_t address){
     int set;
     TLLine_t *updated_line;
     uint64_t new_stride;
@@ -62,19 +62,22 @@ void TL_t::tlUpdate(uint32_t line, uint32_t size, uint64_t pc, uint64_t address)
     //Obtain line to be updated
     updated_line = &(this->sets[set].lines[line]);
 
-    //update stride, last address and confidance counter
-    new_stride = address - updated_line->last_address;
-    if(new_stride == updated_line->stride)
-        updated_line->confidence_counter++;
-    else if(updated_line->last_address > address){
-        //If the stride is negative, zero to confidence counter and stride
+    //If the stride is negative, reset confidence counter and stride value
+    if(address < updated_line->last_address){
         updated_line->confidence_counter = 0;
         updated_line->stride = 0;
     }
     else{
-        updated_line->confidence_counter = 0;
-        updated_line->stride = new_stride;
+        //If is not, update confidence counter and stride, accordingly
+        new_stride = address - updated_line->last_address;
+        if(new_stride == updated_line->stride)
+            updated_line->confidence_counter++;
+        else{
+            updated_line->confidence_counter = 0;
+            updated_line->stride = new_stride;
+        }
+        //Add stride to the statistics
+        printf("PC: %lu, NEW: %lu, OLD: %lu, Read size %d, STRIDE:%lu, confidence: %d\n", pc, address, updated_line->last_address, readSize, new_stride, updated_line->confidence_counter);
     }
-    printf("PC: %lu, NEW: %lu, OLD: %lu, STRIDE:%lu, confidence: %d\n", pc, address, updated_line->last_address, new_stride, updated_line->confidence_counter);
     updated_line->last_address = address;
 }

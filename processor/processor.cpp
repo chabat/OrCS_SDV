@@ -769,16 +769,18 @@ void processor_t::decode(){
 		//SPECULATIVE DYNAMIC VECTORIZATION
 		//Check if the instruction is a load
 		if(this->fetchBuffer.front()->opcode_operation == INSTRUCTION_OPERATION_MEM_LOAD){
-			//Check if the load already is on the table of loads
+			//Get pc , read size and load address
 			uint64_t this_pc = fetchBuffer.front()->opcode_address;
 			uint64_t this_address = fetchBuffer.front()->read_address;
+			uint32_t this_read_size = fetchBuffer.front()->read_size;
+			//Check if the load already is on the table of loads
 			int tl_line = orcs_engine.table_of_loads->tlFind(this_pc);
 			//if the load is not in the table of table_of_loads, insert it
 			if(tl_line == -1)
 				orcs_engine.table_of_loads->tlInsert(this_pc, this_address);
 			else{
 				//Otherwise, update last address, stride and confidence counter
-				orcs_engine.table_of_loads->tlUpdate(tl_line, this_pc, this_address);
+				orcs_engine.table_of_loads->tlUpdate(tl_line, this_read_size, this_pc, this_address);
 			}
 		}
 
