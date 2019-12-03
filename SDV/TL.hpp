@@ -7,10 +7,12 @@ class TL_t{
         const uint32_t N_SETS = 512;
         const uint32_t N_WAYS = 4;
         const uint32_t MAX_STRIDE_STATS = 1000000; //Maximum number of elements considered for the stats of the TL
+        const uint32_t VECTOR_SIZE = 64; //Vector size in bytes
 
         //Variables for TL statistics
         uint64_t *strideStats; //Strides for each number of elements
         uint64_t totalStrides; //Total number of strided loads
+        uint64_t vectorizableLoads; //Number of loads that can ben vectorized
 
     public:
         TLSet_t *sets;

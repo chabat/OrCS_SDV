@@ -2,7 +2,8 @@
 
 TL_t::TL_t(){
     this->sets = new TLSet_t[this->N_SETS];
-
+    this->totalStrides = 0;
+    this->vectorizableLoads = 0;
     this->strideStats = (uint64_t *) malloc(this->MAX_STRIDE_STATS * sizeof(uint64_t));
     memset(this->strideStats, 0, sizeof(*(this->strideStats)));
 }
@@ -86,6 +87,8 @@ void TL_t::tlUpdate(uint32_t line, uint32_t readSize, uint64_t pc, uint64_t addr
             else{
                 this->totalStrides++;
                 this->strideStats[updated_line->stride/readSize]++;
+                if(updated_line->stride <= this->VECTOR_SIZE/2)
+                    this->vectorizableLoads++;
                 //printf("PC: %lu, NEW: %lu, OLD: %lu, Read size %d, STRIDE:%lu, confidence: %d\n", pc, address, updated_line->last_address, readSize, new_stride, updated_line->confidence_counter);
             }
         }
@@ -96,6 +99,7 @@ void TL_t::tlUpdate(uint32_t line, uint32_t readSize, uint64_t pc, uint64_t addr
 void TL_t::statistics(void){
     printf("==========TABLE OF LOADS==========\n");
     printf("Total of stride loads: %ld\n", this->totalStrides);
+    printf("Total of vectorizable loads: %ld\n", this->vectorizableLoads);
     for(int i = 0; i < (int)this->MAX_STRIDE_STATS; i++)
         if(this->strideStats[i] > 0)
             printf("Stride %d: %ld | %.2lf\n", i, this->strideStats[i], ((double)this->strideStats[i]/this->totalStrides) * 100);
