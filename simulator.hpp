@@ -120,6 +120,7 @@ extern orcs_engine_t orcs_engine;
 // SDV Classes
 //  =========================================//
 class TL_t;
+class VRMT_t;
 
 #define SANITY_CHECK 0
 #define HEARTBEAT 1
@@ -227,5 +228,8 @@ class TL_t;
 #include "./SDV/TL_line.hpp"
 #include "./SDV/TL_set.hpp"
 #include "./SDV/TL.hpp"
+#include "./SDV/VRMT_line.hpp"
+#include "./SDV/VRMT_set.hpp"
+#include "./SDV/VRMT.hpp"
 //  =========================================//
 #endif  // _ORCS_ORCS_HPP_

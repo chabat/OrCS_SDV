@@ -1,7 +1,7 @@
 #include "../simulator.hpp"
 
 TL_t::TL_t(){
-    this->sets = new TLSet_t[N_SETS];
+    this->sets = new TLSet_t[this->N_SETS];
 
     this->strideStats = (uint64_t *) malloc(this->MAX_STRIDE_STATS * sizeof(uint64_t));
     memset(this->strideStats, 0, sizeof(*(this->strideStats)));
@@ -81,9 +81,13 @@ void TL_t::tlUpdate(uint32_t line, uint32_t readSize, uint64_t pc, uint64_t addr
         }
         //If the confidence is high enough, add stride to the statistics
         if(updated_line->confidence_counter >= 2){
-            this->totalStrides++;
-            this->strideStats[updated_line->stride/readSize]++;
-            //printf("PC: %lu, NEW: %lu, OLD: %lu, Read size %d, STRIDE:%lu, confidence: %d\n", pc, address, updated_line->last_address, readSize, new_stride, updated_line->confidence_counter);
+            if(updated_line->stride/readSize >= this->MAX_STRIDE_STATS)
+                printf("Number of strided elements is too big");
+            else{
+                this->totalStrides++;
+                this->strideStats[updated_line->stride/readSize]++;
+                //printf("PC: %lu, NEW: %lu, OLD: %lu, Read size %d, STRIDE:%lu, confidence: %d\n", pc, address, updated_line->last_address, readSize, new_stride, updated_line->confidence_counter);
+            }
         }
     }
     updated_line->last_address = address;
@@ -92,7 +96,7 @@ void TL_t::tlUpdate(uint32_t line, uint32_t readSize, uint64_t pc, uint64_t addr
 void TL_t::statistics(void){
     printf("==========TABLE OF LOADS==========\n");
     printf("Total of stride loads: %ld\n", this->totalStrides);
-    for(int i = 0; i < (int)this->totalStrides; i++)
+    for(int i = 0; i < (int)this->MAX_STRIDE_STATS; i++)
         if(this->strideStats[i] > 0)
             printf("Stride %d: %ld | %.2lf\n", i, this->strideStats[i], ((double)this->strideStats[i]/this->totalStrides) * 100);
 }

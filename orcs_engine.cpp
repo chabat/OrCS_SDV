@@ -9,6 +9,7 @@ orcs_engine_t::orcs_engine_t() {
 	this->memory_controller = NULL;
 	this->configuration = NULL;
 	this->table_of_loads = NULL;
+	this->vrmt = NULL;
 }
 // =====================================================================
 void orcs_engine_t::allocate(uint32_t NUMBER_OF_PROCESSORS) {
@@ -26,6 +27,7 @@ void orcs_engine_t::allocate(uint32_t NUMBER_OF_PROCESSORS) {
 	this->memory_controller = new memory_controller_t;
 	this->hive_controller = new hive_controller_t;
 	this->table_of_loads = new TL_t;
+	this->vrmt = new VRMT_t;
 }
 
 bool orcs_engine_t::get_simulation_alive(uint32_t NUMBER_OF_PROCESSORS) {

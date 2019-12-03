@@ -36,6 +36,7 @@ class orcs_engine_t {
         hive_controller_t *hive_controller;
 		//SDV Structures
 		TL_t *table_of_loads;
+		VRMT_t *vrmt;
 
 
         // ====================================================================

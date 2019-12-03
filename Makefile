@@ -63,6 +63,7 @@ SRC_HIVE = $(FD_HIVE)/hive_controller.cpp\
 SRC_CONFIG = $(FD_CONFIG)/config.cpp
 
 SRC_SDV = $(FD_SDV)/TL.cpp\
+		  $(FD_SDV)/VRMT.cpp	
 
 SRC_CORE =  simulator.cpp orcs_engine.cpp\
 			$(SRC_TRACE_READER)\
