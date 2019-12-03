@@ -28,7 +28,7 @@ static uint32_t process_argv(int argc, char **argv) {
     int opt;
     int option_index = 0;
     uint32_t traces_informados = 0;
-    
+
     while ((opt = getopt_long_only(argc, argv, "h:c:t:f:w:",
                  long_options, &option_index)) != -1) {
         switch (opt) {
@@ -80,7 +80,7 @@ static uint32_t process_argv(int argc, char **argv) {
     return NUMBER_OF_PROCESSORS;
 }
 
-std::string get_status_execution(uint32_t NUMBER_OF_PROCESSORS){   
+std::string get_status_execution(uint32_t NUMBER_OF_PROCESSORS){
     std::string final_report;
     char report[1000];
     // Data - Atual,total, active cores
@@ -94,9 +94,9 @@ std::string get_status_execution(uint32_t NUMBER_OF_PROCESSORS){
     final_report+=report;
     gettimeofday(&orcs_engine.stat_timer_end, NULL);
     double seconds_spent = orcs_engine.stat_timer_end.tv_sec - orcs_engine.stat_timer_start.tv_sec;
-    
+
     utils_t::process_mem_usage(&orcs_engine.stat_vm_allocate, &orcs_engine.stat_rss_allocate);
-    
+
     /// Get global statistics from all the cores
     for (uint32_t cpu = 0 ; cpu < NUMBER_OF_PROCESSORS ; cpu++) {
         ActualLength += orcs_engine.trace_reader[cpu].get_fetch_instructions();
@@ -114,8 +114,8 @@ std::string get_status_execution(uint32_t NUMBER_OF_PROCESSORS){
     final_report+=report;
     // IPC parcial
     snprintf(report,sizeof(report),"Global IPC(%1.6lf)\n", static_cast<double>(ActualLength) / static_cast<double>(orcs_engine.get_global_cycle()));
-    final_report+=report;    
-    //    
+    final_report+=report;
+    //
     double seconds_remaining = (100*(seconds_spent / percentage_complete)) - seconds_spent;
         snprintf(report,sizeof(report), "Global ETC(%02.0f:%02.0f:%02.0f)\n",
                                                 floor(seconds_remaining / 3600.0),
@@ -131,7 +131,7 @@ std::string get_status_execution(uint32_t NUMBER_OF_PROCESSORS){
     for (uint32_t cpu = 0 ; cpu < NUMBER_OF_PROCESSORS ; cpu++) {
         snprintf(report,sizeof(report),"%s","==========================================================================\n");
         final_report+=report;
-        // Get benchmark name 
+        // Get benchmark name
         snprintf(report,sizeof(report),"Benchmark %s\n",orcs_engine.arg_trace_file_name[cpu].c_str());
         final_report+=report;
 
@@ -213,7 +213,7 @@ int main(int argc, char **argv) {
         //Processor
         //==================
         orcs_engine.processor[i].allocate();
-        orcs_engine.processor[i].set_processor_id(i);        
+        orcs_engine.processor[i].set_processor_id(i);
         //==================
         //Branch Predictor
         //==================
@@ -236,7 +236,7 @@ int main(int argc, char **argv) {
         {
             orcs_engine.processor[i].clock();
         }
-        
+
         orcs_engine.global_cycle++;
     }
     // *****************************************************************************************
@@ -252,10 +252,10 @@ int main(int argc, char **argv) {
         memory_leak_warning = true;
     }
     for (uint32_t cpu = 0; cpu < NUMBER_OF_PROCESSORS; cpu++){
-        FullLength += orcs_engine.trace_reader[cpu].get_trace_opcode_max() + 1; 
+        FullLength += orcs_engine.trace_reader[cpu].get_trace_opcode_max() + 1;
         kilo_instructions_simulated += orcs_engine.trace_reader->get_fetch_instructions() / 1000.0;
     }
-    
+
     FILE *output = stdout;
     bool close = false;
     if(orcs_engine.output_file_name != NULL){
@@ -271,8 +271,8 @@ int main(int argc, char **argv) {
                                                 floor(seconds_spent / 3600.0),
                                                 floor(fmod(seconds_spent, 3600.0) / 60.0),
                                                 fmod(seconds_spent, 60.0));
-        fprintf(output,"KIPS: %lf\n", static_cast<double> (kilo_instructions_simulated/seconds_spent));   
-        if (memory_leak_warning) fprintf(output,"Check for Memory Leak!\n");   
+        fprintf(output,"KIPS: %lf\n", static_cast<double> (kilo_instructions_simulated/seconds_spent));
+        if (memory_leak_warning) fprintf(output,"Check for Memory Leak!\n");
         utils_t::largeSeparator(output);
     }
     if(close) fclose(output);
@@ -294,7 +294,8 @@ int main(int argc, char **argv) {
             utils_t::largeSeparator(output);
         }
     }
-    orcs_engine.memory_controller->statistics();    
+    orcs_engine.memory_controller->statistics();
+    orcs_engine.table_of_loads->statistics();    
     ORCS_PRINTF("Writed FILE\n")
     // *****************************************************************************************
 
